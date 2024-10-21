@@ -58,6 +58,11 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
+import io.flutter.embedding.android.FlutterFragment;
+import io.flutter.embedding.android.FlutterView;
+import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.embedding.engine.dart.DartExecutor;
+
 /**
  * Activity for the multi-tracker app.  This app detects barcodes and displays the value with the
  * rear facing camera. During detection overlay graphics are drawn to indicate the position,
@@ -84,6 +89,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
     private ImageView imgViewBarcodeCaptureUseFlash;
     private ImageView imgViewSwitchCamera;
+    private ImageView btnBarcodeCaptureCancel;
+    private FlutterView flutterView;
 
     public static int SCAN_MODE = SCAN_MODE_ENUM.QR.ordinal();
 
@@ -109,16 +116,12 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         try {
             setContentView(R.layout.barcode_capture);
 
-            String buttonText = "";
-            try {
-                    buttonText = (String) getIntent().getStringExtra("cancelButtonText");
         } catch (Exception e) {
-            buttonText = "Cancel";
             Log.e("BCActivity:onCreate()", "onCreate: " + e.getLocalizedMessage());
         }
 
-        Button btnBarcodeCaptureCancel = findViewById(R.id.btnBarcodeCaptureCancel);
-        btnBarcodeCaptureCancel.setText(buttonText);
+      
+        btnBarcodeCaptureCancel = findViewById(R.id.btnBarcodeCaptureCancel);
         btnBarcodeCaptureCancel.setOnClickListener(this);
 
         imgViewBarcodeCaptureUseFlash = findViewById(R.id.imgViewBarcodeCaptureUseFlash);
@@ -147,8 +150,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             gestureDetector = new GestureDetector(this, new CaptureGestureListener());
             scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
-        } catch (Exception e) {
-        }
+
     }
 
     /**
@@ -400,11 +402,11 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             try {
                 if (flashStatus == USE_FLASH.OFF.ordinal()) {
                     flashStatus = USE_FLASH.ON.ordinal();
-                    imgViewBarcodeCaptureUseFlash.setImageResource(R.drawable.ic_barcode_flash_on);
+                    imgViewBarcodeCaptureUseFlash.setImageResource(R.drawable.flash_on);
                     turnOnOffFlashLight(true);
                 } else {
                     flashStatus = USE_FLASH.OFF.ordinal();
-                    imgViewBarcodeCaptureUseFlash.setImageResource(R.drawable.ic_barcode_flash_off);
+                    imgViewBarcodeCaptureUseFlash.setImageResource(R.drawable.flash_off);
                     turnOnOffFlashLight(false);
                 }
             } catch (Exception e) {
