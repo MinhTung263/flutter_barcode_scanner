@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' hide Color;
 
 /// Scan mode which is either QR code or BARCODE
 enum ScanMode { QR, BARCODE, DEFAULT }
