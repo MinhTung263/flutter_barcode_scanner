@@ -23,13 +23,16 @@ class FlutterBarcodeScanner {
   /// Shows a scan line with [lineColor] over a scan window. A flash icon is
   /// displayed if [isShowFlashIcon] is true. The text of the cancel button can
   static Future<String> scanBarcode({
-    String? lineColor,
+    Color? lineColor,
     bool? isShowFlashIcon,
     ScanMode? scanMode,
   }) async {
+    final lineColorHex = lineColor != null
+        ? '#${lineColor.value.toRadixString(16).padLeft(8, '0').substring(2)}'
+        : '#ff6666'; // Default color if none is provided
     // Pass params to the plugin
-    Map params = <String, dynamic>{
-      'lineColor': lineColor ?? '#ff6666',
+    final Map params = <String, dynamic>{
+      'lineColor': lineColorHex,
       'isShowFlashIcon': isShowFlashIcon ?? true,
       'isContinuousScan': false,
       'scanMode': scanMode?.index ?? ScanMode.BARCODE.index
@@ -47,17 +50,20 @@ class FlutterBarcodeScanner {
   /// Shows a scan line with [lineColor] over a scan window. A flash icon is
   /// displayed if [isShowFlashIcon] is true. The text of the cancel button can
   /// detected barcode strings.
-  static Stream? getBarcodeStreamReceiver(
-    String lineColor,
-    bool isShowFlashIcon,
-    ScanMode scanMode,
-  ) {
+  static Stream? getBarcodeStreamReceiver({
+    Color? lineColor,
+    bool? isShowFlashIcon,
+    ScanMode? scanMode,
+  }) {
+    final lineColorHex = lineColor != null
+        ? '#${lineColor.value.toRadixString(16).padLeft(8, '0').substring(2)}'
+        : '#ff6666'; // Default color if none is provided
     // Pass params to the plugin
     Map params = <String, dynamic>{
-      'lineColor': lineColor,
-      'isShowFlashIcon': isShowFlashIcon,
+      'lineColor': lineColorHex,
+      'isShowFlashIcon': isShowFlashIcon ?? true,
       'isContinuousScan': true,
-      'scanMode': scanMode.index
+      'scanMode': scanMode?.index ?? ScanMode.BARCODE.index,
     };
 
     // Invoke method to open camera, and then create an event channel which will

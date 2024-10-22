@@ -293,8 +293,8 @@ class BarcodeScannerViewController: UIViewController {
     func drawUIOverlays(withCompletion processCompletionCallback: () -> Void){
         //    func drawUIOverlays(){
         let overlayPath = UIBezierPath(rect: view.bounds)
-        
-        let transparentPath = UIBezierPath(rect: CGRect(x: xCor, y: yCor, width: self.isOrientationPortrait ? (screenSize.width*0.8) : (screenSize.height*0.8), height: screenHeight))
+        let cornerRadius: CGFloat = 20.0
+        let transparentPath = UIBezierPath(roundedRect: CGRect(x: xCor, y: yCor, width: self.isOrientationPortrait ? (screenSize.width*0.8) : (screenSize.height*0.8), height: screenHeight),cornerRadius: cornerRadius)
         
         overlayPath.append(transparentPath)
         overlayPath.usesEvenOddFillRule = true
@@ -512,20 +512,27 @@ class BarcodeScannerViewController: UIViewController {
     private func drawLine() {
         self.view.addSubview(scanLine)
         scanLine.backgroundColor = hexStringToUIColor(hex: SwiftFlutterBarcodeScannerPlugin.lineColor)
-        scanlineRect = CGRect(x: xCor, y: yCor, width:self.isOrientationPortrait ? (screenSize.width*0.8) : (screenSize.height*0.8), height: 2)
-        
+
+        let originalWidth = self.isOrientationPortrait ? (screenSize.width * 0.8) : (screenSize.height * 0.8)
+        let offset: CGFloat = 50
+        let newWidth = max(originalWidth - offset, 0)
+
+        let xPosition = xCor + (originalWidth - newWidth) / 2
+        scanlineRect = CGRect(x: xPosition, y: yCor, width: newWidth, height: 2)
+
         scanlineStartY = yCor
-        
-        var stopY:CGFloat
-        
+
+        var stopY: CGFloat
+
         if SwiftFlutterBarcodeScannerPlugin.scanMode == ScanMode.QR.index {
-            let w = self.isOrientationPortrait ? (screenSize.width*0.8) : (screenSize.height*0.6)
+            let w = self.isOrientationPortrait ? (screenSize.width * 0.8) : (screenSize.height * 0.6)
             stopY = (yCor + w)
         } else {
             let w = self.isOrientationPortrait ? (screenSize.width * 0.5) : (screenSize.height * 0.5)
             stopY = (yCor + w)
         }
         scanlineStopY = stopY
+
     }
     
     /// Animate scan line vertically

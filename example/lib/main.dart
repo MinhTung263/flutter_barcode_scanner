@@ -20,11 +20,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> startBarcodeScanStream() async {
-    FlutterBarcodeScanner.getBarcodeStreamReceiver(
-      '#ff6666',
-      true,
-      ScanMode.BARCODE,
-    )!
+    FlutterBarcodeScanner.getBarcodeStreamReceiver()!
         .listen((barcode) => print(barcode));
   }
 
@@ -56,6 +52,7 @@ class _MyAppState extends State<MyApp> {
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
         scanMode: ScanMode.BARCODE,
+        lineColor: Colors.green,
       );
       print(barcodeScanRes);
     } on PlatformException {
