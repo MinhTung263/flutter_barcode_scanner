@@ -22,17 +22,17 @@ class FlutterBarcodeScanner {
   ///
   /// Shows a scan line with [lineColor] over a scan window. A flash icon is
   /// displayed if [isShowFlashIcon] is true. The text of the cancel button can
-  static Future<String> scanBarcode(
-    String lineColor,
-    bool isShowFlashIcon,
-    ScanMode scanMode,
-  ) async {
+  static Future<String> scanBarcode({
+    String? lineColor,
+    bool? isShowFlashIcon,
+    ScanMode? scanMode,
+  }) async {
     // Pass params to the plugin
     Map params = <String, dynamic>{
-      'lineColor': lineColor,
-      'isShowFlashIcon': isShowFlashIcon,
+      'lineColor': lineColor ?? '#ff6666',
+      'isShowFlashIcon': isShowFlashIcon ?? true,
       'isContinuousScan': false,
-      'scanMode': scanMode.index
+      'scanMode': scanMode?.index ?? ScanMode.BARCODE
     };
 
     /// Get barcode scan result
