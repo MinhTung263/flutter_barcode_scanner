@@ -32,7 +32,7 @@ class FlutterBarcodeScanner {
       'lineColor': lineColor ?? '#ff6666',
       'isShowFlashIcon': isShowFlashIcon ?? true,
       'isContinuousScan': false,
-      'scanMode': scanMode?.index ?? ScanMode.BARCODE
+      'scanMode': scanMode?.index ?? ScanMode.BARCODE.index
     };
 
     /// Get barcode scan result
