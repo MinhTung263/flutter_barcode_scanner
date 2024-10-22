@@ -1,11 +1,23 @@
 PODS:
+  - CocoaLumberjack (3.8.5):
+    - CocoaLumberjack/Core (= 3.8.5)
+  - CocoaLumberjack/Core (3.8.5)
   - Flutter (1.0.0)
-  - flutter_barcode_scanner (1.1.0):
+  - flutter_barcode_scanner (2.0.0):
     - Flutter
+    - SVGKit
+  - SVGKit (3.0.0):
+    - CocoaLumberjack (~> 3.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_barcode_scanner (from `.symlinks/plugins/flutter_barcode_scanner/ios`)
+  - SVGKit
+
+SPEC REPOS:
+  trunk:
+    - CocoaLumberjack
+    - SVGKit
 
 EXTERNAL SOURCES:
   Flutter:
@@ -14,9 +26,11 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_barcode_scanner/ios"
 
 SPEC CHECKSUMS:
-  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
-  flutter_barcode_scanner: cd6b739f16ff1696ba9e304904f2411ba97d303c
+  CocoaLumberjack: 6a459bc897d6d80bd1b8c78482ec7ad05dffc3f0
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_barcode_scanner: ece7f8af5eab16779a69e7373294955149d40c6f
+  SVGKit: 1ad7513f8c74d9652f94ed64ddecda1a23864dea
 
-PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+PODFILE CHECKSUM: c005f257d45ab2f21cdb34dc56a66c5ee37812dc
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.15.2

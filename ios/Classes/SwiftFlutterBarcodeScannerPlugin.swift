@@ -1,7 +1,7 @@
 import Flutter
 import UIKit
 import AVFoundation
-
+import SVGKit
 enum ScanMode:Int{
     case QR
     case BARCODE
@@ -178,39 +178,38 @@ class BarcodeScannerViewController: UIViewController {
     //Bottom view
     private lazy var bottomView : UIView! = {
         let view = UIView()
-        view.backgroundColor = UIColor.black
-        view.translatesAutoresizingMaskIntoConstraints = false
+        view.translatesAutoresizingMaskIntoConstraints = true
         return view
     }()
     
-    /// Create and return flash button
-    private lazy var flashIcon : UIButton! = {
-        let flashButton = UIButton()
-        flashButton.setTitle("Flash",for:.normal)
-        flashButton.translatesAutoresizingMaskIntoConstraints=false
-        
-        flashButton.setImage(UIImage(named: "ic_flash_off", in: Bundle(for: SwiftFlutterBarcodeScannerPlugin.self), compatibleWith: nil),for:.normal)
-        
-        flashButton.addTarget(self, action: #selector(BarcodeScannerViewController.flashButtonClicked), for: .touchUpInside)
-        return flashButton
+    private lazy var flashIcon: UIButton! = {
+        return createButton(imageName: "flash-off", action: #selector(BarcodeScannerViewController.flashButtonClicked))
     }()
-    
-    /// Create and return switch camera button
-    private lazy var switchCameraButton : UIButton! = {
+
+    private lazy var switchCameraButton: UIButton! = {
+        return createButton(imageName: "camera-switch", action: #selector(BarcodeScannerViewController.switchCameraButtonClicked))
+    }()
+
+    private func createButton(imageName: String, action: Selector) -> UIButton {
         let button = UIButton()
-        
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(named: "ic_switch_camera", in: Bundle(for: SwiftFlutterBarcodeScannerPlugin.self), compatibleWith: nil),for: .normal)
-        button.addTarget(self, action: #selector(BarcodeScannerViewController.switchCameraButtonClicked), for: .touchUpInside)
+        
+        // Load the SVG image
+        let svg = SVGKImage(named: imageName, in: Bundle(for: SwiftFlutterBarcodeScannerPlugin.self), withCacheKey: nil)
+        if let svgImage = svg {
+            svgImage.size = CGSize(width: 40, height: 40)  // Set the size
+            button.setImage(svgImage.uiImage.withRenderingMode(.alwaysTemplate), for: .normal)
+            button.tintColor = UIColor.white  // Set tint color
+            button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 40, right: 0)  // Set padding
+            button.addTarget(self, action: action, for: .touchUpInside)  // Set action
+        }
         
         return button
-    }()
-    
+    }
     
     /// Create and return cancel button
     public lazy var cancelButton: UIButton! = {
         let view = UIButton()
-        view.setTitle(SwiftFlutterBarcodeScannerPlugin.cancelButtonText, for: .normal)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.addTarget(self, action: #selector(BarcodeScannerViewController.cancelButtonClicked), for: .touchUpInside)
         return view
@@ -364,9 +363,8 @@ class BarcodeScannerViewController: UIViewController {
         bottomView.heightAnchor.constraint(equalToConstant:self.isOrientationPortrait ? 100.0 : 70.0).isActive=true
         
         flashIcon.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        flashIcon.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
-        flashIcon.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
-        flashIcon.widthAnchor.constraint(equalToConstant: 40.0).isActive = true
+        flashIcon.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+     
         
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
         cancelButton.widthAnchor.constraint(equalToConstant: 100.0).isActive = true
@@ -374,10 +372,7 @@ class BarcodeScannerViewController: UIViewController {
         cancelButton.bottomAnchor.constraint(equalTo:view.bottomAnchor,constant: 0).isActive=true
         cancelButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant:10).isActive = true
         
-        switchCameraButton.translatesAutoresizingMaskIntoConstraints = false
-        // A little bit to the right.
         switchCameraButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
-        switchCameraButton.heightAnchor.constraint(equalToConstant: 70.0).isActive = true
         switchCameraButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
     }
     
@@ -390,17 +385,24 @@ class BarcodeScannerViewController: UIViewController {
         }
     }
     
-    private func flashIconOff() {
-        flashIcon.setImage(UIImage(named: "ic_flash_off", in: Bundle(for: SwiftFlutterBarcodeScannerPlugin.self), compatibleWith: nil),for:.normal)
+    private func updateFlashIcon(isFlashOn: Bool) {
+        let svgImageName = isFlashOn ? "flash-on" : "flash-off"
+        
+        // Load the SVG image
+        if let svg = SVGKImage(named: svgImageName, in: Bundle(for: SwiftFlutterBarcodeScannerPlugin.self), withCacheKey: nil) {
+            
+            // Set the desired size for the SVG image
+            svg.size = CGSize(width: 40, height: 40)  // Adjust size here
+            
+            // Set the image with rendering mode to allow color change
+            flashIcon.setImage(svg.uiImage.withRenderingMode(.alwaysTemplate), for: .normal)
+            
+           
+        }
     }
-    
-    private func flashIconOn() {
-        flashIcon.setImage(UIImage(named: "ic_flash_on", in: Bundle(for: SwiftFlutterBarcodeScannerPlugin.self), compatibleWith: nil),for:.normal)
-    }
-    
     private func setFlashStatus(device: AVCaptureDevice, mode: AVCaptureDevice.TorchMode) {
         guard device.hasTorch else {
-            flashIconOff()
+            updateFlashIcon(isFlashOn: false)
             return
         }
         
@@ -409,12 +411,12 @@ class BarcodeScannerViewController: UIViewController {
             
             if (mode == .off) {
                 device.torchMode = AVCaptureDevice.TorchMode.off
-                flashIconOff()
+                updateFlashIcon(isFlashOn: false)
             } else {
                 // Treat .auto & .on equally.
                 do {
                     try device.setTorchModeOn(level: 1.0)
-                    flashIconOn()
+                    updateFlashIcon(isFlashOn: true)
                 } catch {
                     print(error)
                 }
@@ -429,7 +431,7 @@ class BarcodeScannerViewController: UIViewController {
     /// Toggle flash and change flash icon
     func toggleFlash() {
         guard let device = getCaptureDeviceFromCurrentSession(session: captureSession) else {
-            flashIconOff()
+            updateFlashIcon(isFlashOn: false)
             return
         }
         
