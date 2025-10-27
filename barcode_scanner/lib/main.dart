@@ -89,6 +89,7 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () => scanQR(),
                     child: Text('Start QR scan'),
                   ),
+
                   ElevatedButton(
                     onPressed: () => startBarcodeScanStream(),
                     child: Text('Start barcode scan stream'),

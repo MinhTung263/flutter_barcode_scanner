@@ -54,7 +54,10 @@ public class FlutterBarcodeScannerPlugin implements MethodChannel.MethodCallHand
     private Application applicationContext;
     private Lifecycle lifecycle;
     private LifeCycleObserver observer;
-
+    public static String flashOffIcon = null;
+    public static String flashOnIcon = null;
+    public static String cancelButtonIcon = null;
+    public static String cameraSwitchIcon = null;
     public FlutterBarcodeScannerPlugin() {}
 
     @Override
@@ -72,6 +75,10 @@ public class FlutterBarcodeScannerPlugin implements MethodChannel.MethodCallHand
                 if (lineColor == null || lineColor.isEmpty()) {
                     lineColor = "#DC143C";
                 }
+                flashOffIcon = (String) arguments.get("flashOffIcon");
+                flashOnIcon = (String) arguments.get("flashOnIcon");
+                cancelButtonIcon = (String) arguments.get("cancelButtonIcon");
+                cameraSwitchIcon = (String) arguments.get("cameraSwitchIcon");
 
                 if (arguments.get("scanMode") != null) {
                     int mode = (int) arguments.get("scanMode");

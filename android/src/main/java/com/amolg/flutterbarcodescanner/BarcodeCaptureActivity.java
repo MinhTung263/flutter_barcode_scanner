@@ -62,7 +62,11 @@ import io.flutter.embedding.android.FlutterFragment;
 import io.flutter.embedding.android.FlutterView;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.dart.DartExecutor;
-
+import com.caverock.androidsvg.SVG;
+import android.graphics.drawable.PictureDrawable;
+import android.widget.ImageView;
+import android.view.View;
+import android.util.Base64;
 /**
  * Activity for the multi-tracker app.  This app detects barcodes and displays the value with the
  * rear facing camera. During detection overlay graphics are drawn to indicate the position,
@@ -130,7 +134,18 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
         imgViewSwitchCamera = findViewById(R.id.imgViewSwitchCamera);
         imgViewSwitchCamera.setOnClickListener(this);
+      
+       if (FlutterBarcodeScannerPlugin.cancelButtonIcon != null) {
+            setSvgBase64ToImageView(btnBarcodeCaptureCancel, FlutterBarcodeScannerPlugin.cancelButtonIcon);
+        }
 
+        if (FlutterBarcodeScannerPlugin.flashOffIcon != null) {
+            setSvgBase64ToImageView(imgViewBarcodeCaptureUseFlash, FlutterBarcodeScannerPlugin.flashOffIcon);
+        }
+
+        if (FlutterBarcodeScannerPlugin.cameraSwitchIcon != null) {
+            setSvgBase64ToImageView(imgViewSwitchCamera, FlutterBarcodeScannerPlugin.cameraSwitchIcon);
+        }
         mPreview = findViewById(R.id.preview);
         mGraphicOverlay = findViewById(R.id.graphicOverlay);
 
@@ -152,6 +167,28 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
 
     }
+    private void setSvgBase64ToImageView(ImageView imageView, String base64Str) {
+        try {
+            if (base64Str == null) return;
+
+            if (base64Str.startsWith("data:image/svg+xml;base64,")) {
+                base64Str = base64Str.substring(26);
+            }
+
+            byte[] decodedBytes = Base64.decode(base64Str, Base64.DEFAULT);
+            String svgContent = new String(decodedBytes, "UTF-8");
+
+            SVG svg = SVG.getFromString(svgContent);
+            PictureDrawable drawable = new PictureDrawable(svg.renderToPicture());
+
+            imageView.setLayerType(View.LAYER_TYPE_SOFTWARE, null); 
+            imageView.setImageDrawable(drawable); 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     /**
      * Handles the requesting of the camera permission.  This includes
