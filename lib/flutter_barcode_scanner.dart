@@ -4,8 +4,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' hide Color;
 
-Future<String> svgAssetToBase64(String assetPath) async {
-  final bytes = await rootBundle.load(assetPath);
+Future<String> svgAssetToBase64(String assetName) async {
+  final bytes = await rootBundle.load(
+    'packages/flutter_barcode_scanner/assets/icons/$assetName',
+  );
   final base64Str = base64Encode(bytes.buffer.asUint8List());
   return 'data:image/svg+xml;base64,$base64Str';
 }
@@ -39,20 +41,17 @@ class FlutterBarcodeScanner {
         ? '#${lineColor.value.toRadixString(16).padLeft(8, '0').substring(2)}'
         : '#ff6666';
 
-    const pkg = 'packages/flutter_barcode_scanner/assets/icons/';
-
     // Helper để convert asset sang base64, trả về null nếu path rỗng
     Future<String?> _toBase64(String? assetPath) async {
       if (assetPath == null || assetPath.isEmpty) return null;
       return await svgAssetToBase64(assetPath);
     }
 
-    // Load tất cả icon cùng lúc
     final results = await Future.wait([
-      _toBase64('${pkg}flashOff.svg'),
-      _toBase64('${pkg}flashOn.svg'),
-      _toBase64('${pkg}cancel-button.svg'),
-      _toBase64('${pkg}camera-switch.svg'),
+      _toBase64('flashOff.svg'),
+      _toBase64('flashOn.svg'),
+      _toBase64('cancel-button.svg'),
+      _toBase64('camera-switch.svg'),
     ]);
 
     final params = <String, dynamic>{
